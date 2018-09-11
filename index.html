@@ -84,24 +84,42 @@
                     //gif
                     var gifURL = response.data[i].images.original_still.url;
 
+                    var gifURLstill = response.data[i].images.original_still.url;
+
+                    var gifURLanimate = response.data[i].images.original.url;
+
+
                     var gif = $("<img class='gifcool'>").attr("src", gifURL);
 
                     gif.addClass("gifcool");
+
+                    gif.attr("data-still", gifURLstill);
+
+                    gif.attr("id","gif#: "+ [i]);
+
+                    gif.attr("data-animate",gifURLanimate)
+
+                    gif.attr("data-state", "still");
+
+
+
+
 
                     animalDiv.append(gif);
 
 
                     $("#gif-view").prepend(animalDiv);
 
-                    $(".gif").on("click", function () {
-                        // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+
+                    $(".gifcool").on("click", function () {
+
                         var state = $(this).attr("data-state");
-                        // If the clicked image's state is still, update its src attribute to what its data-animate value is.
-                        // Then, set the image's data-state to animate
-                        // Else set src to the data-still value
+
                         if (state === "still") {
+ 
                             $(this).attr("src", $(this).attr("data-animate"));
                             $(this).attr("data-state", "animate");
+
                         } else {
                             $(this).attr("src", $(this).attr("data-still"));
                             $(this).attr("data-state", "still");
