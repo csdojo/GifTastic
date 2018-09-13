@@ -10,6 +10,10 @@
     <title>Document</title>
 
     <style type="text/css">
+        body {
+            margin-bottom: 30px;
+        }
+
         .animal {
             float: left;
             margin: auto;
@@ -17,7 +21,25 @@
 
 
         .gifcool {
-            height: 150px;
+            height: 140px;
+        }
+
+        @media screen and (max-width: 1200px) {
+            .gifcool {
+                height: 80px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .gifcool {
+                height: 70px;
+            }
+        }
+
+        @media only screen and (max-width: 640px) {
+            .gifcool {
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -31,7 +53,7 @@
     </div>
 
     <div class="row">
-        <div id="gif-view" class="col-8">
+        <div id="gif-view" class="col-8 img-fluid">
 
         </div>
 
@@ -43,10 +65,14 @@
                 <input style="width:350px;" type="text" id="animal-input">
                 <br>
                 <input style="margin-top: 10px;" id="add-animal" type="submit" value="Submit" class="btn btn-info">
+                <br>
+                <input style="margin-top: 10px;" id="load-more" type="submit" value="Load More" class="btn btn-info">
             </form>
         </div>
     </div>
-
+    <p class="totop">
+        <a href="#top">Back to top</a>
+    </p>
 
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -60,8 +86,6 @@
 
         function displayAnimalInfo() {
 
-            console.log("click");
-
             var animal = $(this).attr("data-name");
 
             var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + animal + "&api_key=D2JWHM3zl3NtzjkI09tm0XnLu5QYET6s";
@@ -73,10 +97,10 @@
 
                 $("#gif-view").empty();
 
-                for (var i = 0; i < 10; i++) {
+                for (var i = 0; i < 100; i++) {
 
                     //rating
-                    var animalDiv = $("<div class='animal col-4'>");
+                    var animalDiv = $("<div class='animal col-4 img-fluid'>");
 
                     var ratingHere = response.data[i].rating;
 
@@ -98,7 +122,7 @@
 
                     gif.attr("data-still", gifURLstill);
 
-                    gif.attr("id", "gif#: " + [i]);
+                    gif.attr("id", "gifNum" + [i]);
 
                     gif.attr("data-animate", gifURLanimate)
 
@@ -106,19 +130,7 @@
 
                     gif.on('click', function () {
 
-
-                        console.log(event.target);
-                        var hasIt = $(event.target).hasClass("gifcool");
-                        console.log(hasIt);
-                        if (!hasIt) {
-                            return null;
-                        }
-
                         var state = $(this).attr("data-state");
-                        console.log(state);
-                        console.log($(this).attr("data-animate"), $(this).attr("data-still"));
-
-
 
                         if (state === "still") {
 
@@ -132,16 +144,48 @@
                         }
                     })
 
-                    animalDiv.append(gif);
+                    $(".animal").hide();
 
+                    $(".animal").slice(0, 9).show();
+
+                    animalDiv.append(gif);
 
                     $("#gif-view").prepend(animalDiv);
 
+
+                    $("#load-more").on('click', function (e) {
+                        e.preventDefault();
+                        $(".animal:hidden").slice(0, 9).slideDown();
+                        // if ($(".animal:hidden").length == 0) {
+                        //     $("#load").fadeOut('slow');
+                        // }
+                        $('html,body').animate({
+                            scrollTop: $("#gifNum6").offset().top
+                        }, 700);
+
+                        $('a[href=#top]').click(function () {
+                            $('body,html').animate({
+                                scrollTop: 0
+                            }, 600);
+                            return false;
+                        });
+
+                        $(window).scroll(function () {
+                            if ($("#gifNum0").scrollTop() > 50) {
+                                $('.totop a').fadeIn();
+                            } else {
+                                $('.totop a').fadeOut();
+                            }
+                        });
+
+                    })
+
+
+
                 }
+
             })
         }
-
-
 
         function renderButtons() {
 
@@ -164,18 +208,28 @@
 
         $("#add-animal").on("click", function (event) {
 
-            event.preventDefault();
+            if ($("#animal-input").val() === "") {
+                alert("Please type a kind of animal!")
+            } else {
 
-            var animal = $("#animal-input").val().trim();
+                event.preventDefault();
 
-            animals.push(animal);
+                var animal = $("#animal-input").val().trim();
 
-            renderButtons();
+                animals.push(animal);
+
+                renderButtons();
+
+
+            }
         });
 
         $(document).on("click", ".animal-btn", displayAnimalInfo);
 
         renderButtons();
+
+
+
 
 
 
